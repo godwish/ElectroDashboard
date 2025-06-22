@@ -12,9 +12,9 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
-    "build:mac": "electron-builder --mac --x64 && electron-builder --mac --arm64",
-    "build:win": "electron-builder --win --x64 && electron-builder --win --arm64",
-    "build:linux": "electron-builder --linux --x64 && electron-builder --linux --arm64",
+    "build:mac": "electron-builder --mac --x64 --publish always && electron-builder --mac --arm64 --publish always",
+    "build:win": "electron-builder --win --x64 --publish always && electron-builder --win --arm64 --publish always",
+    "build:linux": "electron-builder --linux --x64 --publish always && electron-builder --linux --arm64 --publish always",
     "build:all": "npm run build:mac && npm run build:win && npm run build:linux",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,7 +25,8 @@
       {
         "provider": "github",
         "owner": "godwish",
-        "repo": "ElectroDashboard"
+        "repo": "ElectroDashboard",
+        "releaseType": "release"
       }
     ],
     "files": [
