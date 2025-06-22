@@ -1,8 +1,11 @@
 const windowStateKeeper = require('electron-window-state');
 const { app, BrowserWindow,shell ,Menu, dialog} = require('electron');
+const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
 const path = require('path');
 const { ipcMain } = require('electron');
 const fs = require('fs');
+
 
 function LoadResources(...lst){
     const isPackaged = app.isPackaged;
@@ -116,8 +119,36 @@ ipcMain.handle('export', async() => {
     return true;
 });
 
+log.transports.file.level = 'info';  // <- 이 순서 먼저
+autoUpdater.logger = log;
+
+autoUpdater.on('checking-for-update', () => {
+    log.info('🔍 Checking for update...');
+});
+
+autoUpdater.on('update-available', (info) => {
+    log.info('📦 Update available:', info);
+});
+
+autoUpdater.on('update-not-available', () => {
+    log.info('✅ No update available.');
+});
+
+autoUpdater.on('error', (err) => {
+    log.error('❌ Update error:', err);
+});
+
+autoUpdater.on('download-progress', (progress) => {
+    log.info(`📥 Downloading: ${Math.floor(progress.percent)}%`);
+});
+
+autoUpdater.on('update-downloaded', () => {
+    log.info('✅ Update downloaded, will install on quit.');
+});
+
 app.whenReady().then(() => {
     createWindow();
+    autoUpdater.checkForUpdatesAndNotify();
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
