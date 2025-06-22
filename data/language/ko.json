@@ -1,0 +1,28 @@
+{
+  "setting_app_title": "Dashboard.js 설정",
+  "setting_save": "저장",
+  "setting_name_title": "Dashboard 제목",
+  "setting_language": "언어",
+  "setting_cancel": "취소",
+  "setting_confirm": "확인",
+  "setting_import": "데이터 가져오기",
+  "setting_export": "데이터 내보내기",
+
+  "index_setup": "설정",
+  "index_edit": "편집",
+
+  "editor_category_add": "카테고리 추가",
+  "editor_category_cancel": "취소",
+  "editor_category_apply": "적용",
+  "editor_category_title": "카테고리 편집",
+  "editor_category_name": "카테고리 이름",
+  "editor_site_title": "사이트 편집",
+  "editor_site_name": "사이트 이름",
+  "editor_site_url": "사이트 주소",
+
+  "editor_category_btn_confirm": "확인",
+  "editor_category_btn_cancel": "취소",
+
+  "editor_site_btn_confirm": "확인",
+  "editor_site_btn_cancel": "취소"
+}

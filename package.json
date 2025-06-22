@@ -1,0 +1,61 @@
+{
+  "name": "electro-dashboard",
+  "productName": "ElectroDashboard",
+  "version": "1.0.0",
+  "description": "A dashboard app built with Electron",
+  "author": {
+    "name": "Godwish",
+    "email": "twishgod@gmail.com"
+  },
+  "homepage": "https://godwish.work/",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac --x64 && electron-builder --mac --arm64",
+    "build:win": "electron-builder --win --x64 && electron-builder --win --arm64",
+    "build:linux": "electron-builder --linux --x64 && electron-builder --linux --arm64",
+    "build:all": "npm run build:mac && npm run build:win && npm run build:linux",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "productName": "ElectroDashboard",
+    "appId": "com.godwishgogo.electro-dashboard",
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js",
+      "data/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "icon": "build/icon.icns",
+      "target": [
+        { "target": "dmg", "arch": "x64" },
+        { "target": "dmg", "arch": "arm64" }
+      ]
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": "nsis"
+    },
+    "linux": {
+      "category": "Utility",
+      "maintainer": "twishgod@gmail.com",
+      "target": ["AppImage", "deb"]
+    }
+  },
+  "keywords": [],
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^36.5.0",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "electron-window-state": "^5.0.3"
+  }
+}

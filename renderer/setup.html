@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard.js Setup</title>
+    <script src="js/setup.js"></script>
+</head>
+<body>
+<label for="language" id="str_language">언어</label>
+<select id="language" onchange="changeLanguage()">
+    <option value="ko" selected>한국어</option>
+    <option value="en">English</option>
+</select><br/><br/>
+<label for="title" id="str_name_title">Dashboard 제목</label> <input type="text" id="title" /><br/><br/>
+<button id="str_cancel" onclick="Back()">취소</button>
+<button id="str_confirm" onclick="Save()">확인</button>
+<br/><br/>
+<button id="str_import" onclick="Import()">데이터 가져오기</button>
+<button id="str_export" onclick="Export()">데이터 내보내기</button>
+</body>
+</html>

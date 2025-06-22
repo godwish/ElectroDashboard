@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="stylesheet" href="css/jquery-ui.css">
+  <link rel="stylesheet" href="css/design.css" type="text/css" />
+  <script src="js/jquery-1.12.4.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <script src="js/editor.js"></script>
+</head>
+<body>
+<div class="flex-right">
+  <a class="ui-button ui-widget ui-corner-all" href="#" onclick='InsertPortlet();' id="str_category_add">카테고리 추가</a>
+  <a class="ui-button ui-widget ui-corner-all" href="#" onclick='Cancel();' id="str_category_cancel">취소</a>
+  <a class="ui-button ui-widget ui-corner-all" href="#" onclick='Apply();' id="str_category_apply">적용</a>
+</div>
+
+<div id="dialog_category">
+  <form>
+    <fieldset>
+      <label for="value_category" id="str_category_name">카테고리 이름</label>
+      <input type="text" name="value_category" id="value_category" value="" class="text ui-widget-content ui-corner-all">
+    </fieldset>
+  </form>
+</div>
+<div id="dialog_item">
+  <form>
+    <fieldset>
+      <label for="value_item" id="str_site_name">사이트 이름</label>
+      <input type="text" name="value_item" id="value_item" value="" class="text ui-widget-content ui-corner-all">
+      <label for="value_url" id="str_site_url">사이트 주소</label>
+      <input type="text" name="value_url" id="value_url" value="" class="text ui-widget-content ui-corner-all">
+    </fieldset>
+  </form>
+</div>
+<br><center><h1 id="str_title"></h1></center><br>
+<div class="total_frame"></div>
+</body>
+</html>

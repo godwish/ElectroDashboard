@@ -1,0 +1,28 @@
+{
+  "setting_app_title": "Dashboard.js Setup",
+  "setting_save": "Confirm",
+  "setting_name_title": "Title Dashboard",
+  "setting_language": "Language",
+  "setting_cancel": "Cancel",
+  "setting_confirm": "Confirm",
+  "setting_import": "Data Import",
+  "setting_export": "Data Export",
+
+  "index_setup": "Setup",
+  "index_edit": "Edit",
+
+  "editor_category_add": "Add Category",
+  "editor_category_cancel": "Cancel",
+  "editor_category_apply": "Apply",
+  "editor_category_title": "Edit Category",
+  "editor_category_name": "Name Category",
+  "editor_site_title": "Edit Site",
+  "editor_site_name": "Name Site",
+  "editor_site_url": "Url Site",
+
+  "editor_category_btn_confirm": "Confirm",
+  "editor_category_btn_cancel": "Cancel",
+
+  "editor_site_btn_confirm": "Confirm",
+  "editor_site_btn_cancel": "Cancel"
+}
