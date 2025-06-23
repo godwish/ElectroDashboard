@@ -146,7 +146,6 @@ ipcMain.handle('get-config', () => {
     return getConfig(); // JSON 객체 반환
 });
 ipcMain.handle('get-translate', ( event,language) => {
-    //console.log(JSON.stringify(language, null, 2));
     return getTranslateData(language); // JSON 객체 반환
 });
 ipcMain.handle('get-site', () => {
