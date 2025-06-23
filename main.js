@@ -36,7 +36,10 @@ function initAutoUpdater() {
             message: `Version ${releaseName} downloaded. Install & restart now?`,
             buttons: ['Install & Restart', 'Later']
         }).then(res => {
-            if (res.response === 0) autoUpdater.quitAndInstall();
+            if (res.response === 0){
+                quit_tray = true;
+                autoUpdater.quitAndInstall();
+            }
         });
     });
     autoUpdater.on('error', err => log.error('❌ AutoUpdater error', err));
