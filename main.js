@@ -1,15 +1,19 @@
 
-const { app, ipcMain, BrowserWindow,shell ,Menu, dialog,globalShortcut,Tray} = require('electron');
+const { app, ipcMain, BrowserWindow,shell ,Menu, dialog,globalShortcut,Tray,nativeImage} = require('electron');
 const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
-const {log} = require("electron-log");
+const log = require('electron-log/main');
 
 var mainWindow;
 var quit_tray = false;
+
+log.transports.file.resolvePathFn = (vars) =>
+    path.join(app.getPath('userData'), 'log.log');
+log.transports.file.level = 'info';
+
 function initAutoUpdater() {
-    log.transports.file.level = 'info';
     autoUpdater.logger = log;
 
     autoUpdater.on('checking-for-update', () => log.info('🔍 Checking for update...'));
@@ -39,10 +43,19 @@ function initAutoUpdater() {
 
     autoUpdater.checkForUpdates();
 }
-function LoadResourcesPath(...lst) {
+function LoadResourcesPath(...segments) {
     try {
-        const rootPath = app.getAppPath();
-        return path.join(rootPath, ...lst);
+        // unpack된 파일이 위치한 경로 확인
+        const baseDir = process.resourcesPath;
+        const unpackedPath = path.join(baseDir, 'app.asar.unpacked', ...segments);
+
+        // 먼저 unpacked 위치에 파일이 존재하는지 확인
+        if (fs.existsSync(unpackedPath)) {
+            return unpackedPath;
+        }
+
+        // 없으면 기본 asar 내부 경로 fallback
+        return path.join(app.getAppPath(), ...segments);
     } catch (err) {
         throw err;
     }
@@ -167,6 +180,8 @@ ipcMain.handle('export', async() => {
 });
 let tray = null;
 app.whenReady().then(() => {
+    log.info('앱 시작됨');
+
     createWindow();
     const ret = globalShortcut.register('F11', () => {
         const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -181,8 +196,19 @@ app.whenReady().then(() => {
 
 
     // 트레이 아이콘 생성
-    const iconName = process.platform === 'win32' ? 'icon.ico' : 'icon.png';
-    tray = new Tray(LoadResourcesPath('data', iconName));
+    if (process.platform === 'darwin') {
+        let image = nativeImage.createFromPath(LoadResourcesPath('data', 'icon.png'));
+
+        // 크기 강제 리사이즈
+        image = image.resize({ width: 22, height: 22 });
+
+        tray = new Tray(image);
+    }
+    else{
+        const iconName = process.platform === 'win32' ? 'icon.ico' : 'icon.png';
+        tray = new Tray(LoadResourcesPath('data', iconName));
+    }
+
 
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Show', click: () => mainWindow.show() },
