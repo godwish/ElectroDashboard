@@ -30,16 +30,18 @@
       }
     ],
     "files": [
-      "dist/**/*",
+      "!dist",
+      "!node_modules/.cache",
+      "!*.log",
       "main.js",
       "preload.js",
       "data/**/*",
       "renderer/**/*",
       "package.json"
     ],
-    "asar": false,
+    "asar": true,
     "directories": {
-      "output": "dist"
+      "output": "dist/${arch}"
     },
     "mac": {
       "icon": "build/icon.icns",
@@ -56,7 +58,11 @@
     },
     "win": {
       "icon": "build/icon.ico",
-      "target": "nsis"
+      "target": [
+        { "target": "nsis", "arch": "x64" },
+        { "target": "nsis", "arch": "arm64" }
+      ],
+      "artifactName": "${productName}-Setup-${version}-${arch}.${ext}"
     },
     "linux": {
       "category": "Utility",
