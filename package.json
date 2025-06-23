@@ -34,8 +34,10 @@
       "main.js",
       "preload.js",
       "data/**/*",
+      "renderer/**/*",
       "package.json"
     ],
+    "asar": false,
     "directories": {
       "output": "dist"
     },

@@ -1,20 +1,52 @@
+
+const { app, ipcMain, BrowserWindow,shell ,Menu, dialog,globalShortcut} = require('electron');
 const windowStateKeeper = require('electron-window-state');
-const { app, BrowserWindow,shell ,Menu, dialog} = require('electron');
-const { autoUpdater } = require('electron-updater');
-const log = require('electron-log');
 const path = require('path');
-const { ipcMain } = require('electron');
 const fs = require('fs');
+const { autoUpdater } = require('electron-updater');
+const {log} = require("electron-log");
 
+function initAutoUpdater() {
+    log.transports.file.level = 'info';
+    autoUpdater.logger = log;
 
-function LoadResources(...lst){
-    const isPackaged = app.isPackaged;
-    const front = isPackaged ? process.resourcesPath : __dirname;
-    const resourcesPath = path.join(front, ...lst);
-    return fs.readFileSync(resourcesPath, 'utf-8');
+    autoUpdater.on('checking-for-update', () => log.info('🔍 Checking for update...'));
+    autoUpdater.on('update-available', info => {
+        const focused = BrowserWindow.getFocusedWindow();
+        dialog.showMessageBox(focused, {
+            type: 'info', title: 'Update Available',
+            message: 'A new version is available. Download now?',
+            buttons: ['Download', 'Later']
+        }).then(res => {
+            if (res.response === 0) autoUpdater.downloadUpdate();
+        });
+    });
+    autoUpdater.on('update-not-available', () => log.info('✅ No updates'));
+    autoUpdater.on('download-progress', p => log.info(`📥 ${Math.floor(p.percent)}% downloaded`));
+    autoUpdater.on('update-downloaded', (_e, releaseNotes, releaseName) => {
+        const focused = BrowserWindow.getFocusedWindow();
+        dialog.showMessageBox(focused, {
+            type: 'info', title: 'Install Update',
+            message: `Version ${releaseName} downloaded. Install & restart now?`,
+            buttons: ['Install & Restart', 'Later']
+        }).then(res => {
+            if (res.response === 0) autoUpdater.quitAndInstall();
+        });
+    });
+    autoUpdater.on('error', err => log.error('❌ AutoUpdater error', err));
+
+    autoUpdater.checkForUpdates();
 }
-
-
+function LoadResources(...lst) {
+    try {
+        const rootPath = app.getAppPath();
+        const resourcesPath = path.join(rootPath, ...lst);
+        return fs.readFileSync(resourcesPath, 'utf-8');
+    } catch (err) {
+        console.error('[LoadResources] Failed to load:', lst.join('/'), err);
+        throw err;
+    }
+}
 function createWindow () {
     let mainWindowState = windowStateKeeper({
         defaultWidth: 1280,
@@ -32,6 +64,7 @@ function createWindow () {
             nodeIntegration: false
         }
     });
+    //win.webContents.openDevTools();
     // target="_blank" 링크를 외부 브라우저로 열도록 설정
     win.webContents.setWindowOpenHandler(({ url }) => {
         shell.openExternal(url);
@@ -41,8 +74,6 @@ function createWindow () {
     mainWindowState.manage(win);
 
     const configPath = path.join(app.getPath('userData'), 'config.json');
-
-    win.loadFile('renderer/setup.html');
     // 설정 파일이 있으면 메인 페이지, 없으면 설정 페이지
     if (fs.existsSync(configPath))
         win.loadFile('renderer/index.html');
@@ -70,6 +101,12 @@ function getTranslateData(language){
     let txt = LoadResources('data','language', language+'.json');
     return JSON.parse(txt);
 }
+
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});
+
+
 ipcMain.on('save-config', (event, data) => {
     const configPath = path.join(app.getPath('userData'), 'config.json');
     fs.writeFileSync(configPath, JSON.stringify(data, null, 2));
@@ -77,7 +114,6 @@ ipcMain.on('save-config', (event, data) => {
 ipcMain.on('save-site', (event, data) => {
     const configPath = path.join(app.getPath('userData'), 'sites.json');
     fs.writeFileSync(configPath, JSON.stringify(data, null, 2));
-    return null;
 });
 ipcMain.handle('get-config', () => {
     return getConfig(); // JSON 객체 반환
@@ -118,42 +154,24 @@ ipcMain.handle('export', async() => {
     fs.writeFileSync(filePath, data, 'utf-8');
     return true;
 });
-
-log.transports.file.level = 'info';  // <- 이 순서 먼저
-autoUpdater.logger = log;
-
-autoUpdater.on('checking-for-update', () => {
-    log.info('🔍 Checking for update...');
-});
-
-autoUpdater.on('update-available', (info) => {
-    log.info('📦 Update available:', info);
-});
-
-autoUpdater.on('update-not-available', () => {
-    log.info('✅ No update available.');
-});
-
-autoUpdater.on('error', (err) => {
-    log.error('❌ Update error:', err);
-});
-
-autoUpdater.on('download-progress', (progress) => {
-    log.info(`📥 Downloading: ${Math.floor(progress.percent)}%`);
-});
-
-autoUpdater.on('update-downloaded', () => {
-    log.info('✅ Update downloaded, will install on quit.');
-});
-
 app.whenReady().then(() => {
     createWindow();
-    autoUpdater.checkForUpdatesAndNotify();
-    app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    const ret = globalShortcut.register('F11', () => {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow) focusedWindow.webContents.toggleDevTools();
     });
+    if (!ret) {
+        console.error('F11 단축키 등록 실패');
+    }
+
+    if (app.isPackaged) initAutoUpdater();
+    else console.log('🛠 Development mode – autoUpdater disabled');
 });
 
 app.on('window-all-closed', () => {
     app.quit();
 });
+app.on('will-quit', () => {
+    globalShortcut.unregisterAll();
+});
+
