@@ -1,7 +1,7 @@
 {
   "name": "electro-dashboard",
   "productName": "ElectroDashboard",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A dashboard app built with Electron",
   "author": {
     "name": "Godwish",
@@ -62,8 +62,14 @@
     "win": {
       "icon": "build/icon.ico",
       "target": [
-        { "target": "nsis", "arch": "x64" },
-        { "target": "nsis", "arch": "arm64" }
+        {
+          "target": "nsis",
+          "arch": "x64"
+        },
+        {
+          "target": "nsis",
+          "arch": "arm64"
+        }
       ],
       "artifactName": "${productName}-Setup-${version}-${arch}.${ext}"
     },
