@@ -45,7 +45,6 @@ function MakeContents(json_data){
 function onReceiveSetting(cf){
     config = cf;
     document.getElementById('str_title').innerText = config.title;
-    document.title = config.title;
     window.electronAPI.getTranslate(cf.language).then(dic => { onReceiveTranslate(dic);});
 }
 function onReceiveTranslate(dic){
