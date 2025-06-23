@@ -1,11 +1,13 @@
 
-const { app, ipcMain, BrowserWindow,shell ,Menu, dialog,globalShortcut} = require('electron');
+const { app, ipcMain, BrowserWindow,shell ,Menu, dialog,globalShortcut,Tray} = require('electron');
 const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 const {log} = require("electron-log");
 
+var mainWindow;
+var quit_tray = false;
 function initAutoUpdater() {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
@@ -37,6 +39,14 @@ function initAutoUpdater() {
 
     autoUpdater.checkForUpdates();
 }
+function LoadResourcesPath(...lst) {
+    try {
+        const rootPath = app.getAppPath();
+        return path.join(rootPath, ...lst);
+    } catch (err) {
+        throw err;
+    }
+}
 function LoadResources(...lst) {
     try {
         const rootPath = app.getAppPath();
@@ -64,6 +74,7 @@ function createWindow () {
             nodeIntegration: false
         }
     });
+    mainWindow = win;
     //win.webContents.openDevTools();
     // target="_blank" 링크를 외부 브라우저로 열도록 설정
     win.webContents.setWindowOpenHandler(({ url }) => {
@@ -154,6 +165,7 @@ ipcMain.handle('export', async() => {
     fs.writeFileSync(filePath, data, 'utf-8');
     return true;
 });
+let tray = null;
 app.whenReady().then(() => {
     createWindow();
     const ret = globalShortcut.register('F11', () => {
@@ -166,6 +178,33 @@ app.whenReady().then(() => {
 
     if (app.isPackaged) initAutoUpdater();
     else console.log('🛠 Development mode – autoUpdater disabled');
+
+
+    // 트레이 아이콘 생성
+    tray = new Tray(LoadResourcesPath('data', 'icon.png')); // 트레이 아이콘 경로
+
+    const contextMenu = Menu.buildFromTemplate([
+        { label: 'Show', click: () => mainWindow.show() },
+        { label: 'Quit', click: () => {
+            quit_tray = true;
+            app.quit();
+        } },
+    ]);
+    tray.setToolTip('DashboardApp');
+    tray.setContextMenu(contextMenu);
+
+    // 창 닫을 때 종료 말고 숨기기
+    mainWindow.on('close', (event) => {
+        if(!quit_tray){
+            event.preventDefault();     // 기본 닫기 동작 막음
+            mainWindow.hide();          // 창 숨김
+        }
+    });
+
+    // 트레이 아이콘 클릭 시 창 표시
+    tray.on('click', () => {
+        mainWindow.show();
+    });
 });
 
 app.on('window-all-closed', () => {
