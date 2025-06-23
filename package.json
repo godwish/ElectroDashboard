@@ -40,6 +40,9 @@
       "package.json"
     ],
     "asar": true,
+    "asarUnpack": [
+      "data/**"
+    ],
     "directories": {
       "output": "dist/${arch}"
     },

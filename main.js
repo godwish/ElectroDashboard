@@ -181,7 +181,8 @@ app.whenReady().then(() => {
 
 
     // 트레이 아이콘 생성
-    tray = new Tray(LoadResourcesPath('data', 'icon.png')); // 트레이 아이콘 경로
+    const iconName = process.platform === 'win32' ? 'icon.ico' : 'icon.png';
+    tray = new Tray(LoadResourcesPath('data', iconName));
 
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Show', click: () => mainWindow.show() },
